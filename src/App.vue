@@ -62,7 +62,6 @@ import { onMounted, ref, nextTick } from "vue";
 import { staff, prize } from "@/config";
 import { randomNum } from "@/utils";
 import TagCanavs from "@/assets/js/tagCanvas.js";
-import { ElDialog, ElRow, ElButton } from "element-plus";
 
 let canEl = null;
 
