@@ -51,17 +51,29 @@
           class="lucky-user"
         >
           <img :src="user.avatar" :width="100" :height="100" />
-          <b>{{ user.name }}</b>
+          <b>
+            <span>{{ user.department }}</span
+            >_<b>{{ user.name }}</b></b
+          >
         </div>
       </el-row>
     </el-dialog>
+    <audio class="audio" preload="auto" ref="audioEl" controls autoplay loop>
+      <source :src="audioSrc" />
+      你的浏览器不支持audio标签
+    </audio>
+    <Confetto ref="confettoEl"></Confetto>
   </main>
 </template>
 <script setup>
 import { onMounted, ref, nextTick } from "vue";
 import { staff, prize } from "@/config";
-import { randomNum } from "@/utils";
+import { randomNum, setupCanvas } from "@/utils";
 import TagCanavs from "@/assets/js/tagCanvas.js";
+import Confetto from "@/components/confetto.vue";
+
+import Bgmp3 from "@/assets/bg.mp3";
+import Beginmp3 from "@/assets/begin.mp3";
 
 let canEl = null;
 
@@ -72,15 +84,9 @@ const luckyVisible = ref(false);
 const staffList = ref(staff);
 const prizeList = ref(prize);
 const drawnList = ref([]);
-
-function setupCanvas(canvas) {
-  const { innerWidth, innerHeight, devicePixelRatio } = window;
-  const dpr = devicePixelRatio || 1;
-  canvas.width = innerWidth * dpr;
-  canvas.height = innerHeight * dpr;
-  const ctx = canvas.getContext("2d");
-  ctx.scale(dpr, dpr);
-}
+const confettoEl = ref(null);
+const audioEl = ref(null);
+const audioSrc = ref("");
 
 function speed() {
   return [0.1 * Math.random() + 0.01, -(0.1 * Math.random() + 0.01)];
@@ -118,6 +124,14 @@ function startLottery() {
   dialogVisible.value = true;
 }
 
+function playAudio(mp3) {
+  audioSrc.value = mp3;
+  audioEl.value.load();
+  setTimeout(() => {
+    audioEl.value.play();
+  });
+}
+
 function endLottery() {
   const { limit, users } = curPrize.value;
   TagCanavs.SetSpeed("rootcanvas", speed());
@@ -132,6 +146,8 @@ function endLottery() {
   nextTick(() => {
     luckyVisible.value = true;
     TagCanvas.Reload("rootcanvas");
+    playAudio(Bgmp3);
+    confettoEl.value.play();
   });
 }
 
@@ -141,6 +157,8 @@ function prizeBtnClick(prize, index) {
   drawnList.value.push(prize);
   curPrize.value = prize;
 
+  playAudio(Beginmp3);
+
   TagCanavs.SetSpeed("rootcanvas", [4, 1]);
   isRuning.value = true;
 }
@@ -149,9 +167,14 @@ window.addEventListener("resize", reloadTagCanvas);
 
 onMounted(() => {
   startTagCanvas();
+  playAudio(Bgmp3);
 });
 </script>
 <style lang="scss" scoped>
+.audio {
+  position: absolute;
+  top: -100%;
+}
 .btn {
   position: absolute;
   width: 180px;
