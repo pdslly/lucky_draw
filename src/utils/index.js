@@ -12,6 +12,8 @@ export function setupCanvas(canvas) {
   const dpr = devicePixelRatio || 1;
   canvas.width = innerWidth * dpr;
   canvas.height = innerHeight * dpr;
+  canvas.style.width = innerWidth + "px";
+  canvas.style.height = innerHeight + "px";
   const ctx = canvas.getContext("2d");
   ctx.scale(dpr, dpr);
   return ctx;

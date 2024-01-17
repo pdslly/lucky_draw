@@ -11,6 +11,7 @@ export default ({ mode }) => {
   const { VITE_TITLE } = loadEnv(mode, process.cwd());
 
   return defineConfig({
+    base: "./",
     server: {
       open: true,
       host: "0.0.0.0",
